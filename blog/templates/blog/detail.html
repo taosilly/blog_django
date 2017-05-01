@@ -1,0 +1,100 @@
+{% extends 'blog\base.html' %}
+
+{% load blog_tags %}
+
+{% block main %}
+<div class="flex-center site-60">
+    <div class="container">
+        <div class="flex-left units-gap-big">
+
+    <main class="unit-3-4 unit-1-on-mobile">
+        <section class="post">
+            <article>
+                <h1>{{ post.title }}</h1>
+                <div class="post-meta text-muted text-small top-gap">
+                    <span>{{ post.author }}</span>
+                    <span>{{ post.created_time }}</span>
+                    <span>字数 {{ post.body | length }}</span>
+                    <span>阅读 105</span>
+
+                </div>
+                <div class="post-body top-gap-big">
+                   {{ html | safe }}
+                    <div class="flex-center top-gap"><span>-- EOF --</span></div>
+                    <div>
+                        <span>分类：<a href="{{post.get_absolute_url}}" >{{ post.category }} </a></span><br/>
+                        标签： {{ post.get_tags }}
+                    </div>
+                </div>
+                <footer class="top-gap-big">
+                    <section class="share top-gap">
+                         <div class="bdsharebuttonbox"><a href="#" class="bds_more" data-cmd="more">分享到：</a><a href="#" class="bds_qzone" data-cmd="qzone" title="分享到QQ空间">QQ空间</a><a href="#" class="bds_tsina" data-cmd="tsina" title="分享到新浪微博">新浪微博</a><a href="#" class="bds_tqq" data-cmd="tqq" title="分享到腾讯微博">腾讯微博</a><a href="#" class="bds_renren" data-cmd="renren" title="分享到人人网">人人网</a><a href="#" class="bds_weixin" data-cmd="weixin" title="分享到微信">微信</a></div>
+<script>window._bd_share_config={"common":{"bdSnsKey":{},"bdText":"","bdMini":"2","bdMiniList":false,"bdPic":"","bdStyle":"0","bdSize":"16"},"share":{"bdSize":16},"image":{"viewList":["qzone","tsina","tqq","renren","weixin"],"viewText":"分享到：","viewSize":"16"},"selectShare":{"bdContainerClass":null,"bdSelectMiniList":["qzone","tsina","tqq","renren","weixin"]}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];</script>
+                    </section>
+                    <br>
+                </footer>
+            </article>
+            <aside>
+                <section class="pre-next top-gap text-small flex-left units-gap">
+                    <div class="unit-1-2">
+                        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+
+                            <a href="/post/19/">django 实现简单的搜索功能</a>
+                    </div>
+                    <div class="unit-1-2 flex-right">
+                            <span>
+
+                                    没有了
+                                <i class="fa fa-chevron-right" aria-hidden="true"></i>
+                            </span>
+                    </div>
+                </section>
+            </aside>
+        </section>
+        <hr>
+    </main>
+
+
+    <div class="musk"></div>
+    <aside class="unit-1-4 hide-on-mobile" id="sidebar">
+        <section class="">
+            <h3>文章目录</h3>
+            <div class="text-small table-of-content">
+               {{ toc | safe }}
+            </div>
+        </section>
+    </aside>
+
+        </div>
+    </div>
+</div>
+{% endblock main%}
+
+{% block script %}
+ <script src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            function showSidebar() {
+                var $sidebar = $('#sidebar');
+                $('.musk').fadeIn();
+                $sidebar
+                    .removeClass()
+                    .css({
+                        'left': -$sidebar.outerWidth(),
+                        'position': 'fixed'
+                    })
+                    .addClass('sidebar-on-mobile scroll-view')
+                    .animate({'left': 0}, 300);
+            }
+
+            function hideSidebar() {
+                var $sidebar = $('#sidebar');
+                $('.musk').fadeOut();
+                $sidebar.animate({'left': -$sidebar.outerWidth()}, 300);
+            }
+
+            $('#menu-btn').on('click', showSidebar);
+            $('.musk').on('click', hideSidebar)
+        })
+    </script>
+{% endblock script %}

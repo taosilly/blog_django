@@ -1,0 +1,80 @@
+{% extends 'blog\base.html' %}
+
+{% load blog_tags %}
+
+{% block main %}
+    <div class="flex-center site-60">
+        <div class="container">
+            <div class="flex-left flex-wrap units-gap-big">
+
+                <main class="unit-3-4 unit-1-on-mobile">
+                    <section class="post-list">
+                        {% for post in post_list %}
+                        <article>
+                            <div class="flex-left units-gp">
+                                <div class="unit-0">
+                                    <div class="text-small post-header-meta">
+                                        <span class="author">{{ post.author }}</span>
+                                        <span class="pub-date text-muted"><time title="2017年4月29日 16:22">{{ post.created_time }}</span>
+                                    </div>
+                                    <div class="post-main-info">
+                                        <a class="title" href="{{ post.get_absolute_url }}">{{ post.title }}</a>
+                                        <div class="text-small excerpt">
+                                            {{ post.excerpt }}
+                                        </div>
+                                    </div>
+                                    <div class="text-small post-footer-meta">
+
+                                        <span class="category">
+                                            <a href="/category/django-blog-tutorial/">{{post.category}}</a>
+                                        </span>
+
+                                        <span class="views">
+                                        <a class="text-muted" href="/post/20/">
+                                            <i class="fa fa-eye" aria-hidden="true"></i> 90
+                                        </a>
+                                    </span>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </article>
+                        {% endfor %}
+
+                        <article>
+                            <div class="flex-left units-gap">
+                                <div class="unit-0">
+                                    <header class="text-small post-header-meta">
+                                        <span class="author">追梦人物</span>
+                                        <span class="pub-date text-muted"><time title="2017年4月27日 19:28">2&nbsp;日，17&nbsp;小时</time>前</span>
+                                    </header>
+                                    <div class="post-main-info">
+                                        <a class="title" href="/post/19/">django 实现简单的搜索功能</a>
+                                        <div class="text-small excerpt">
+                                            搜索是一个复杂的功能，但对于一些简单的搜索任务，我们可以使用 django model 层提供的一些内置方法来完成。本文将结合 django 模型管...
+                                        </div>
+                                    </div>
+                                    <footer class="text-small post-footer-meta">
+
+                                            <span class="category">
+                                        <a href="/category/djang-blog-recipes/">django 博客教程拓展</a>
+                                    </span>
+
+                                        <span class="views">
+                                        <a class="text-muted" href="/post/19/">
+                                            <i class="fa fa-eye" aria-hidden="true"></i> 62</a>
+                                    </span>
+
+                                    </footer>
+                                </div>
+
+                            </div>
+                        </article>
+                    </section>
+
+                </main>
+                {% include  'blog/aside.html' %}
+            </div>
+        </div>
+    </div>
+{% endblock main%}

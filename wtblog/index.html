@@ -1,0 +1,168 @@
+{% extends 'blog\base.html' %}
+
+{% load blog_tags %}
+
+{% block main %}
+    <div class="flex-center site-60">
+        <div class="container">
+            <ul class="flex-left flex-wrap units-gap-big">
+
+                <aside class="unit-1-4 unit-1-on-mobile">
+                    <section class="site-subtitle">
+                        <h3 class="hide-on-mobile">公告</h3>
+                        <h6 class="show-on-mobile">公告</h6>
+                        <div class="text-muted text-small favorite-tip">
+                            <p>这是我的博客</p>
+                            <p>我要找个工作</p>
+                        </div>
+                    </section>
+                     <section class="recent-posts">
+                        <h3>分类</h3>
+                         {% get_categories as categories %}
+                        <ul class="list-unstyle text-small">
+                            {% for category in categories %}
+                            <li>
+                                <a href="{% url 'blog:category' category.pk %}">{{ category.name }}</a>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                    </section>
+                    <section class="recent-posts">
+                        <h3>常用功能</h3>
+                        <ul class="list-unstyle text-small">
+                            <li><a href="/categre/python/">标签云</a>
+                                </li>
+                            <li><a href="/categre/python/">归档</a>
+                                </li>
+                            <li><a href="/categre/python/">关于</a>
+                                </li>
+                        </ul>
+                    </section>
+                    <section>
+                        <h3>其他</h3>
+
+                        <div class="site-state motion-element">
+                          <div class="site-state-item site-state-posts">
+                            <a href="/archives">
+                              <span class="site-state-item-count">{{ get_post_total }}</span>
+                              <span class="site-state-item-name">日志</span>
+                            </a>
+                          </div>
+                            <div class="site-state-item site-state-categories">
+                              <a href="/categories">
+                                <span class="site-state-item-count">4</span>
+                                <span class="site-state-item-name">分类</span>
+                              </a>
+                            </div>
+                            <div class="site-state-item site-state-tags">
+                              <a href="/tags">
+                                <span class="site-state-item-count">8</span>
+                                <span class="site-state-item-name">标签</span>
+                              </a>
+                            </div>
+                        </div>
+                        <div class="links-of-author motion-element">
+
+
+                          <span class="links-of-author-item">
+                            <a href="https://github.com/taosilly" target="_blank" title="GitHub">
+
+                                <i class="fa fa-fw fa-github"></i>
+
+                              GitHub
+                            </a>
+                          </span>
+
+                                        <span class="links-of-author-item">
+                            <a href="http://weibo.com/taosilly" target="_blank" title="微博">
+
+                                <i class="fa fa-fw fa-weibo"></i>
+
+                              微博
+                            </a>
+                          </span>
+
+                                        <span class="links-of-author-item">
+                            <a href="http://www.jianshu.com/users/91d8524a8c6b" target="_blank" title="简书">
+
+                                <i class="fa fa-fw fa-edit"></i>
+
+                              简书
+                            </a>
+                          </span>
+
+
+                        </div>
+                    </section>
+                   
+                </aside>
+                <main class="unit-3-4 unit-1-on-mobile">
+                    <section class="post-list">
+                        {% for post in post_list %}
+                        <article>
+                            <div class="flex-left units-gp">
+                                <div class="unit-0">
+                                    <div class="text-small post-header-meta">
+                                        <span class="author">{{ post.author }}</span>
+                                        <span class="pub-date text-muted"><time title="2017年4月29日 16:22">{{ post.created_time }}</span>
+                                    </div>
+                                    <div class="post-main-info">
+                                        <a class="title" href="/post/20/">{{ post.title }}</a>
+                                        <div class="text-small excerpt">
+                                            {{ post.excerpt }}
+                                        </div>
+                                    </div>
+                                    <div class="text-small post-footer-meta">
+
+                                        <span class="category">
+                                            <a href="/category/django-blog-tutorial/">{{post.category}}</a>
+                                        </span>
+
+                                        <span class="views">
+                                        <a class="text-muted" href="/post/20/">
+                                            <i class="fa fa-eye" aria-hidden="true"></i> 90
+                                        </a>
+                                    </span>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </article>
+                        {% endfor %}
+
+                        <article>
+                            <div class="flex-left units-gap">
+                                <div class="unit-0">
+                                    <header class="text-small post-header-meta">
+                                        <span class="author">追梦人物</span>
+                                        <span class="pub-date text-muted"><time title="2017年4月27日 19:28">2&nbsp;日，17&nbsp;小时</time>前</span>
+                                    </header>
+                                    <div class="post-main-info">
+                                        <a class="title" href="/post/19/">django 实现简单的搜索功能</a>
+                                        <div class="text-small excerpt">
+                                            搜索是一个复杂的功能，但对于一些简单的搜索任务，我们可以使用 django model 层提供的一些内置方法来完成。本文将结合 django 模型管...
+                                        </div>
+                                    </div>
+                                    <footer class="text-small post-footer-meta">
+
+                                            <span class="category">
+                                        <a href="/category/djang-blog-recipes/">django 博客教程拓展</a>
+                                    </span>
+
+                                        <span class="views">
+                                        <a class="text-muted" href="/post/19/">
+                                            <i class="fa fa-eye" aria-hidden="true"></i> 62</a>
+                                    </span>
+
+                                    </footer>
+                                </div>
+
+                            </div>
+                        </article>
+                    </section>
+
+                </main>
+            </div>
+        </div>
+    </div>
+{% endblock main%}

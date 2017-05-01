@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+{% load staticfiles %}
+{% load blog_tags %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+     <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <link rel="stylesheet" href="https://unpkg.com/mobi.css/dist/mobi.min.css">
+    <link href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'blog/css/blog.css' %}">
+    <link rel="stylesheet" href="{% static 'blog/css/friendly.css' %}">
+
+    <title>Title</title>
+</head>
+<body>
+    <header id="blog-header">
+        <nav class="nav-bar">
+            <div class="flex-center">
+                <div class="container flex-left">
+                    <div class="unit-0 hide-on-mobile nav-bar-item">
+                        <a href="/" id="logo">taosilly的博客</a>
+                    </div>
+
+                    <div class="unit-0 show-on-mobile nav-bar-item" id="menu-btn">
+                        <i class="fa fa-bars" aria-hidden="true"></i>
+                    </div>
+
+                    <div class="unit-0 show-on-mobile nav-bar-item" id="home-btn">
+                        <a href="/"><i class="fa fa-home" aria-hidden="true"></i></a>
+                    </div>
+                    <div class="unit flex-right flex-middle search-area">
+                        <form class="form" action="#" id="search-form">
+                            <input type="search" placeholder="搜索">
+                            <span class="search-btn"><i class="fa fa-search" aria-hidden="true"></i></span>
+                        </form>
+                    </div>
+
+                </div>
+            </div>
+        </nav>
+    </header>
+    {% block main %}
+    {% endblock main%}
+    <footer id="blog-footer">
+    <div class="flex-center">
+        <div>Copyright © 2017 taosilly的博客</div>
+    </div>
+    <div class="flex-center">
+        <div>蜀ICP备00000000号-1</div>
+    </div>
+    </footer>
+    {% block script %}
+    {% endblock script %}
+</body>
+</html>

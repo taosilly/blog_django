@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+
+    <link rel="stylesheet" href="https://unpkg.com/mobi.css/dist/mobi.min.css">
+ <link href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="./css/blog.css">
+
+    <title>Title</title>
+</head>
+<body>
+    <header id="blog-header">
+        <nav class="nav-bar">
+            <div class="flex-center">
+                <div class="container flex-left">
+                    <div class="unit-0 hide-on-mobile nav-bar-item">
+                        <a href="/" id="logo">taosilly的博客</a>
+                    </div>
+
+                    <div class="unit-0 show-on-mobile nav-bar-item" id="menu-btn">
+                        <i class="fa fa-bars" aria-hidden="true"></i>
+                    </div>
+
+                    <div class="unit-0 show-on-mobile nav-bar-item" id="home-btn">
+                        <a href="/"><i class="fa fa-home" aria-hidden="true"></i></a>
+                    </div>
+                    <div class="unit flex-right flex-middle search-area">
+                        <form class="form" action="#" id="search-form">
+                            <input type="search" placeholder="搜索">
+                            <span class="search-btn"><i class="fa fa-search" aria-hidden="true"></i></span>
+                        </form>
+                    </div>
+
+                </div>
+            </div>
+        </nav>
+    </header>
+<div class="flex-center site-60">
+    <div class="container">
+        <div class="flex-left units-gap-big">
+
+    <main class="unit-3-4 unit-1-on-mobile">
+        <section class="post">
+            <article>
+                <h1>15. 部署 django 博客</h1>
+                <div class="post-meta text-muted text-small top-gap">
+                    <span>22&nbsp;小时，33&nbsp;分钟前</span>
+                    <span>字数 9585</span>
+                    <span>阅读 105</span>
+
+                </div>
+                <div class="post-body top-gap-big">
+                    <p>本文将讲解如何使用 Nginx + Gunicorn 部署 django 项目。本文以一个 django 博客项目为例，一步步教大家把 django 项目部署到服务器。部署的过程是通用的，稍加修改就可以用于你自己的项目。本文的每一个步骤都在真实环境下验证通过，如果你严格按照教程的指示依然遇到问题，请评论留言或者加入 QQ django 学习群以获得帮助。</p>
+<p>django 学习小组 QQ 群：561422498</p>
+<h2 id="bu-shu-qian-zhun-bei">部署前准备</h2>
+<p>我们的博客开发的基本差不多了，虽然还有很多地方可以完善，但我们还是希望早点把博客部署到服务器上，让他人可以通过外网访问。至于有待完善的地方，可以等部署完后一点点地迭代和改进。</p>
+<p>本文将指导你使用比较流行的 Nginx + Gunicorn 将 django 开发的博客部署到自己的服务器，让别人能够通过域名访问你的博客。至于 Nginx、Gunicorn 是什么暂时放到一边，读完本文你就会知道它们的作用和使用方法了。</p>
+<p>为了部署我们的博客，需要满足以下两个条件：</p>
+<ol>
+<li>有一台可以通过外网访问的服务器。</li>
+<li>有一个域名。</li>
+</ol>
+<p>如果你已经满足以上条件，可以直接跳到后面的搭建服务器部分。这里简单介绍一下我目前所知的以最低成本满足以上两个条件的方式。</p>
+<h3 id="gou-mai-fu-wu-qi">购买服务器</h3>
+<p>如果你是学生，推荐购买阿里云服务器，学生优惠价是 9.9 元/月，而且服务器性能比较高。购买地址：<a href="https://promotion.aliyun.com/ntms/campus2017.html">阿里云服务器学生专区</a>。具体的购买步骤这里就不赘述了，根据网站的指引相信你肯定能够购买成功。只是注意一点的是在选服务器类型的时候选择<strong>公共镜像</strong>，这样系统比较纯净。操作系统建议选 <strong>ubuntu 14.04 64位</strong>，这是本教程使用的服务器环境。</p>
+<p>如果你不是学生，推荐购买搬瓦工 vps。目前最便宜的是 19.9美元/年，缺点是服务器性能没有阿里云高，但优点是顺带可以用它来搭梯子，从此访问 google、youtube 不是梦（基于 shadowsocks 只需简单几步就可以搭建起自己的梯子服务器，后面我会专门写一篇教程教大家怎么做）。同样购买的过程就不赘述了，<a href="http://banwagong.cn/">搬瓦工 vps 中文网</a>有超级详细的指引。只是注意安装操作系统时建议选 <strong>ubuntu 14.04 64位</strong>，这是本教程使用的服务器环境。</p>
+<p>如果你不差那点钱，随意选择一个云服务器提供商购买一个云服务器即可。</p>
+<h3 id="gou-mai-yu-ming">购买域名</h3>
+<p>域名服务商很多，我这里使用的是<a href="https://wanwang.aliyun.com/domain/">阿里云域名注册系统</a>。域名是网站的门牌，如果打算长期运营这个网站建议多考虑考虑，选一个适当的域名。如果只是为了测试，随便注册一个域名即可，一些非常见后缀的域名非常便宜，一般 10元/年就能搞定。但注意一点根据工信部规定，以下后缀的域名需要实名认证后才能使用：</p>
+<blockquote>
+<p>.cn/.com/.net/.top/.xyz/.vip/.club/.ren/.wang/.shop/.xin/.中国/.信息/.公司/.网络/.广东/.佛山</p>
+</blockquote>
+<p>如果你购买的是上述后缀的域名，意味着需要提交个人的身份资料实名认证后才能正常使用，这通常需要花费几天的时间。所以如果只为了测试和学习部署的话，最好避开上述后缀的域名。</p>
+<h2 id="da-jian-fu-wu-qi">搭建服务器</h2>
+<p>本教程使用的本地环境为 windows10，服务器环境为 ubuntu 14.04 64 位。如果你的环境和我的有所差异导致一些命令无法执行，将这些命令转换为你所在环境的命令执行即可。</p>
+<h3 id="yuan-cheng-deng-lu-dao-fu-wu-qi">远程登录到服务器</h3>
+<p>服务器通常位于云端，需要使用远程登录工具登录后才能对服务器进行操作。我使用的是 Xshell，windows 下百度 Xshell 下载安装即可，软件对学校和个人用户是免费的。</p>
+<p>如何远程登录到服务器这里就不赘述了，相信你参考网上的一些教程肯定能够顺利登录。假如你和我一样使用 Xshell 的话，这里有一篇很详细的教程可以参考：<a href="http://jingyan.baidu.com/article/ab69b270b0ca3d2ca7189fdc.html">教你怎么使用xshell远程连接linux服务器</a>。</p>
+<h3 id="an-zhuang-ruan-jian">安装软件</h3>
+<p>顺利连接到远程服务器了。如果是一台全新服务器的话，通常我们是以 root 用户登录的。在 root 下部署代码不安全，最好是建一个新用户（如果你已经以非 root 用户登录的话可以跳过这一步）。下面的一些列命令将创建一个拥有超级权限的新用户：</p>
+<div class="codehilite"><pre><span></span># 在 root 用户下运行这条命令创建一个新用户，yangxg 是用户名
+# 因为我叫杨学光，所以我取的用户名是 yangxg
+# 选择一个你喜欢的用户名，不一定非得和我的相同
+root@localhost:~# useradd -m -s /bin/bash yangxg
+
+# 把新创建的用户加入超级权限组
+root@localhost:~# usermod -a -G sudo yangxg
+
+# 为新用户设置密码
+# 注意在输密码的时候不会有字符显示，不要以为键盘坏了，正常输入即可
+root@localhost:~# passwd yangxg
+
+# 切换到创建的新用户
+root@localhost:~# su - yangxg
+
+# 切换成功，@符号前面已经是新用户名而不是 root 了
+yangxg@localhost:~$
+</pre></div>
+
+
+<p>新用户创建并切换成功了。如果是新服务器的话，最好先更新一下系统，避免因为版本太旧而给后面安装软件带来麻烦。运行下面的两条命令：</p>
+<div class="codehilite"><pre><span></span>yangxg@localhost:~$ sudo apt-get update
+yangxg@localhost:~$ sudo apt-get upgrade
+</pre></div>
+
+
+<p>接下来就可以安装必要的软件了，这里我们需要用到的软件有 Nginx、Pytohn3、Git、pip 和 virtualenv。</p>
+<div class="codehilite"><pre><span></span>yangxg@localhost:~$ sudo apt-get install nginx
+yangxg@localhost:~$ sudo apt-get install git python3 python3-pip
+yangxg@localhost:~$ sudo pip3 install virtualenv
+</pre></div>
+
+
+<h3 id="jie-xi-yu-ming-dao-fu-wu-qi-de-ip-di-zhi">解析域名到服务器的 IP 地址</h3>
+<p>将域名和服务器的 IP 地址绑定后，用户就可以通过在浏览器输入域名来访问服务器了。</p>
+<p>各大域名服务商都提供了域名解析服务，但其配置界面各有差异，请依据其指引完成域名解析。下面是我使用的阿里云域名解析页面。</p>
+<p><img alt="阿里云域名解析设置界面" src="http://7xq740.com1.z0.glb.clouddn.com/%E5%9F%9F%E5%90%8D%E6%8E%A7%E5%88%B6%E5%8F%B0%E8%A7%A3%E6%9E%90%E8%AE%BE%E7%BD%AE.png"></p>
+<h3 id="qi-dong-nginx-fu-wu">启动 Nginx 服务</h3>
+<p>Nginx 是用来处理静态文件请求的。比如当我们访问一个博客文章详情页面时，服务器会接收到下面两种请求：</p>
+<ul>
+<li>显示文章的详情信息，这些信息通常保存在数据库里，因此需要调用数据库获取数据。</li>
+<li>图片、css、js 等存在服务器某个文件夹下的静态文件。</li>
+</ul>
+<p>对于前一种请求，博客文章的数据需要借助 django 从数据库中获取，Nginx 处理不了，它就会把这个请求转发给 django，让 django 去处理。而对于后一种静态文件的请求，只需要去这些静态文件所在的文件夹获取，Nginx 就会代为处理，不再麻烦 django。</p>
+<p>用 django 去获取静态文件是很耗时的，但 Nginx 可以很高效地处理，这就是我们要使用 Nginx 的原因（当然其功能远不止这些）。</p>
+<p>通过前面的步骤我们已经安装了 Nginx，并且已经把域名和服务器 IP 绑定了。运行下面的命令启动 Nginx 服务：</p>
+<div class="codehilite"><pre><span></span>yangxg@localhost:~$ sudo service nginx start
+</pre></div>
+
+
+<p>在浏览器输入域名，看到如下页面说明 Nginx 启动成功了。</p>
+<p><img alt="Nginx欢迎页面" src="http://7xq740.com1.z0.glb.clouddn.com/Nginx%E6%AC%A2%E8%BF%8E%E9%A1%B5%E9%9D%A2.png"></p>
+<h2 id="bu-shu-dai-ma">部署代码</h2>
+<h3 id="bu-shu-qian-de-xiang-mu-pei-zhi">部署前的项目配置</h3>
+<p>django 项目中会有一些 css、js 等静态文件，为了能够方便地让 Nginx 处理这些静态文件的请求，我们把项目中的全部静态文件收集到一个统一的目录下，这个目录通常位于 django 项目的根目录，并且命名为 static。为了完成这些任务，需要在项目的配置文件里做一些必要的配置：</p>
+<div class="codehilite"><pre><span></span><span class="n">blogproject</span><span class="o">/</span><span class="n">settings</span><span class="o">.</span><span class="n">py</span>
+
+<span class="c1"># 其他配置...</span>
+
+<span class="n">STATIC_URL</span> <span class="o">=</span> <span class="s1">'/static/'</span>
+<span class="c1"># 加入下面的配置</span>
+<span class="n">STATIC_ROOT</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">BASE_DIR</span><span class="p">,</span> <span class="s1">'static'</span><span class="p">)</span>
+</pre></div>
+
+
+<p>STATIC_ROOT 指明了静态文件的收集目录，即项目根目录（BASE_DIR）下的 static 文件夹。</p>
+<p>为了安全起见，在生产环境下需要关闭 DEBUG 选项以及设置允许访问的域名：</p>
+<div class="codehilite"><pre><span></span><span class="n">blogproject</span><span class="o">/</span><span class="n">settings</span><span class="o">.</span><span class="n">py</span>
+
+<span class="n">DEBUG</span> <span class="o">=</span> <span class="bp">False</span>
+<span class="n">ALLOWED_HOSTS</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'127.0.0.1'</span><span class="p">,</span> <span class="s1">'localhost'</span><span class="p">,</span> <span class="s1">'.zmrenwu.com'</span><span class="p">]</span>
+</pre></div>
+
+
+<p>ALLOWED_HOSTS 是允许访问的域名列表，<code>127.0.0.1</code> 和 <code>localhost</code> 是本地访问的域名，<code>.zmrenwu.com</code> 是访问服务器的域名（<strong>换成你自己的域名</strong>）。域名前加一个点表示允许访问该域名下的子域名，比如 <code>www.zmrenwu.com</code>、<code>test.zmrenwu.com</code> 等二级域名同样允许访问。如果不加前面的点则只允许访问 <code>zmrenwu.com</code>。</p>
+<p>项目还会依赖一些第三方 Python 库，为了方便在服务器上一次性安装，我们将全部依赖写入一个叫 requirements.txt 的文本文件中。激活<strong>本地</strong>的虚拟环境（如果你使用了虚拟环境的话），并进入项目的根目录，运行 <code>pip freeze &gt; requirements.txt</code> 命令：</p>
+<div class="codehilite"><pre><span></span><span class="p">(</span><span class="n">blogproject_env</span><span class="p">)</span> <span class="n">C</span><span class="err">:</span><span class="p">\</span><span class="n">Users</span><span class="p">\</span><span class="n">yangxg</span><span class="p">\</span><span class="n">Workspace</span><span class="p">\</span><span class="n">blogproject</span><span class="p">&gt;</span>
+<span class="n">pip</span> <span class="n">freeze</span> <span class="p">&gt;</span> <span class="n">requirements</span><span class="p">.</span><span class="n">txt</span>
+</pre></div>
+
+
+<p>这时项目根目录下会生成了一个 requirements.txt 的文本文件，其内容记录了项目的全部依赖。</p>
+<h3 id="jiang-dai-ma-shang-chuan-dao-github">将代码上传到 GitHub</h3>
+<p>将代码上传到 GitHub 等代码托管平台，这样我们就可以方便地把代码拉取到服务器了。Git 和 GitHub 的使用相信你已经很熟悉了，这里就不赘述过程。如果不知道如何使用地话可以自行百度相关教程。</p>
+<p><strong>注意数据库文件不要上传！</strong></p>
+<h3 id="she-zhi-fu-wu-qi-mu-lu-jie-gou">设置服务器目录结构</h3>
+<p>接下来需要把代码上传到服务器了。我服务器上存放代码的目录结构一般是这样的：</p>
+<div class="codehilite"><pre><span></span>/home/yangxg/
+    sites/
+        demo.zmrenwu.com/
+            env/
+            blogproject/
+</pre></div>
+
+
+<p>一台服务器可能部署多个网站，所有网站代码都放在 sites/ 目录下。</p>
+<p>demo.zmrenwu.com/ 这个文件夹以网站的域名命名，便于区分。</p>
+<p>env/ 是 python 虚拟环境目录。</p>
+<p>blogproject/ 是 django 项目目录。</p>
+<p>因此先来创建这个目录结构，<strong>注意目录名替换为你自己的域名，以后涉及到 demo.zmrenwu.com 的地方通常都要替换你自己的域名，后面就不再一一指出了</strong>，运行下面的命令，</p>
+<div class="codehilite"><pre><span></span>yangxg@localhost:~$ mkdir -p ~/sites/demo.zmrenwu.com
+</pre></div>
+
+
+<p>这里 ~ 代表当前用户的 home 目录，即 /home/yangxg/。</p>
+<p>接下来创建虚拟环境，先进入到 demo.zmrenwu.com 目录下，然后运行 virtualenv 命令创建虚拟环境：</p>
+<div class="codehilite"><pre><span></span>yangxg@localhost:~$ cd ~/sites/demo.zmrenwu.com
+yangxg@localhost:~/sites/demo.zmrenwu.com$ virtualenv --python=python3 env
+</pre></div>
+
+
+<p>注意这里使用 --python=python3 来指定克隆 python3 的环境。因为 ubuntu 系统默认安装了 python2，如果不特别指定的话 virtualenv 默认克隆的是 python2 的环境。</p>
+<p>检查一下虚拟环境是否创建成功，运行 ls 命令列出当前目录下的文件和文件夹，看到 env 这个文件夹说明虚拟环境创建成功。</p>
+<div class="codehilite"><pre><span></span>yangxg@localhost:~/sites/demo.zmrenwu.com$ ls
+env
+</pre></div>
+
+
+<p>接着再从代码仓库把项目代码拉取过来，<strong>把 git clone 后的地址换成你自己的 GitHub 仓库地址！</strong>：</p>
+<div class="codehilite"><pre><span></span>yangxg@localhost:~/sites/demo.zmrenwu.com$ git clone https://github.com/zmrenwu/django-blog-tutorial.git
+</pre></div>
+
+
+<p>运行 ls 命令检查一下是否拉取成功：</p>
+<div class="codehilite"><pre><span></span>yangxg@localhost:~/sites/demo.zmrenwu.com$ ls
+django-blog-tutorial  env
+</pre></div>
+
+
+<p>多了 django-blog-tutorial 文件夹（文件夹名称由你的 GitHub 仓库名决定），说明拉取成功了。</p>
+<h3 id="an-zhuang-xiang-mu-yi-lai">安装项目依赖</h3>
+<p>激活虚拟环境，再进入到项目根目录，即 requirements.txt 所在的目录，安装项目的全部依赖：</p>
+<div class="codehilite"><pre><span></span>yangxg@localhost:~/sites/demo.zmrenwu.com$ source env/bin/activate
+(env) yangxg@localhost:~/sites/demo.zmrenwu.com$ cd django-blog-tutorial/
+(env) yangxg@localhost:~/sites/demo.zmrenwu.com/django-blog-tutorial$ pip install -r requirements.txt
+</pre></div>
+
+
+<h3 id="shou-ji-jing-tai-wen-jian">收集静态文件</h3>
+<p>虚拟环境下继续运行 <code>python manage.py collectstatic</code> 命令收集静态文件到 static 目录下：</p>
+<div class="codehilite"><pre><span></span>(env) yangxg@localhost:~/sites/demo.zmrenwu.com/django-blog-tutorial$ python manage.py collectstatic
+</pre></div>
+
+
+<h3 id="sheng-cheng-shu-ju-ku">生成数据库</h3>
+<p>虚拟环境下继续运行 <code>python manage.py migrate</code> 命令常见数据库文件：</p>
+<div class="codehilite"><pre><span></span>(env) yangxg@localhost:~/sites/demo.zmrenwu.com/django-blog-tutorial$ python manage.py migrate
+</pre></div>
+
+
+<h3 id="chuang-jian-chao-ji-yong-hu">创建超级用户</h3>
+<p>虚拟环境下继续运行 <code>python manage.py createsuperuser</code> 命令创建一个超级用户，方便我们进入 django 管理后台。这和本地开发时是一样的，具体请参照：<a href="http://www.zmrenwu.com/post/9/">在 django admin 后台发布我们的文章</a>。</p>
+<div class="codehilite"><pre><span></span>(env) yangxg@localhost:~/sites/demo.zmrenwu.com/django-blog-tutorial$ python manage.py createsuperuser
+</pre></div>
+
+
+<h2 id="pei-zhi-nginx">配置 Nginx</h2>
+<p>接下是配置 Nginx 来处理用户请求。</p>
+<p>先在服务器的 /etc/nginx/sites-available/ 目录下新建一个配置文件，文件名我一般就设置为域名。写上下面的配置内容：</p>
+<div class="codehilite"><pre><span></span><span class="o">/</span><span class="nt">etc</span><span class="o">/</span><span class="nt">nginx</span><span class="o">/</span><span class="nt">sites-available</span><span class="o">/</span><span class="nt">demo</span><span class="p">.</span><span class="nc">zmrenwu</span><span class="p">.</span><span class="nc">com</span>
+
+<span class="nt">server</span> <span class="p">{</span>
+    <span class="err">charset</span> <span class="err">utf-8</span><span class="p">;</span>
+    <span class="err">listen</span> <span class="err">80</span><span class="p">;</span>
+    <span class="err">server_name</span> <span class="err">demo.zmrenwu.com</span><span class="p">;</span> <span class="err">①</span>
+
+    <span class="err">location</span> <span class="err">/static</span> <span class="err">{</span> <span class="err">②</span>
+        <span class="err">alias</span> <span class="err">/home/yangxg/sites/demo.zmrenwu.com/django-blog-tutorial/static</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="nt">location</span> <span class="o">/</span> <span class="p">{</span> <span class="err">③</span>
+        <span class="err">proxy_set_header</span> <span class="err">Host</span> <span class="err">$host</span><span class="p">;</span>
+        <span class="err">proxy_pass</span> <span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="n">unix</span><span class="o">:/</span><span class="n">tmp</span><span class="o">/</span><span class="n">demo</span><span class="o">.</span><span class="n">zmrenwu</span><span class="o">.</span><span class="n">com</span><span class="o">.</span><span class="n">socket</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="err">}</span>
+</pre></div>
+
+
+<p>① 服务的域名为 demo.zmrenwu.com。</p>
+<p>② 所有URL 带有 /static 的请求均由 Nginx 处理，alias 指明了静态文件的存放目录。</p>
+<p>③ 其它请求转发给 django 处理。proxy_pass 后面使用了 unix 套接字，其作用是防止端口冲突，这里就不再详述。</p>
+<p>至于怎么在服务器新建文件和写文件，请自行学习一点点 vi 编辑器的用法，这里也不一一讲解了。</p>
+<p>我们在 /etc/nginx/sites-available/  放置了配置文件，接下来需要创建一个符号链接，把这个配置文件加入到启用的网站列表中去，被启用网站的目录在 /etc/nginx/sites-enabled/，你可以理解为从  sites-available/ 目录下发送了一个配置文件的快捷方式到 sites-enabled/ 目录。具体命令如下：</p>
+<div class="codehilite"><pre><span></span><span class="o">(</span>env<span class="o">)</span> yangxg@localhost:~/sites/demo.zmrenwu.com/django-blog-tutorial$ sudo ln -s /etc/nginx/sites-available/demo.zmrenwu.com /etc/nginx/sites-enabled/demo.zmrenwu.com
+</pre></div>
+
+
+<h2 id="shi-yong-gunicorn">使用 Gunicorn</h2>
+<p>Gunicorn 一般用来管理多个进程，有进程挂了Gunicorn 可以把它拉起来，防止服务器长时间停止服务，还可以动态调整 worker 的数量，请求多的时候增加 worker 的数量，请求少的时候减少。</p>
+<p>在虚拟环境下，安装 Gunicorn：</p>
+<div class="codehilite"><pre><span></span>(env) yangxg@localhost:~/sites/demo.zmrenwu.com/django-blog-tutorial$ pip install gunicorn
+</pre></div>
+
+
+<p>用 gunicorn 启动服务器进程：</p>
+<div class="codehilite"><pre><span></span><span class="o">(</span>env<span class="o">)</span> yangxg@localhost:~/sites/demo.zmrenwu.com/django-blog-tutorial$ gunicorn --bind unix:/tmp/demo.zmrenwu.com.socket blogproject.wsgi:application
+</pre></div>
+
+
+<p>浏览器输入域名，可以看到访问成功了！</p>
+<h3 id="zi-dong-qi-dong-gunicorn">自动启动 Gunicorn</h3>
+<p>现在 Gunicorn 是我们手工启动的，万一哪天服务器崩溃重启了又得重新手工启动。为此我们写一个自动启动脚本，这样当服务器重新启动后，脚本会帮我们重启 Gunicorn。先按 Ctrl + C 停止刚才启动的服务器进程。</p>
+<p>写一个启动脚本，这样当服务器重启后能自动引导 Gunicorn 的启动。脚本位于 /etc/init/ 目录下，且脚本文件名必须以 .conf 结尾：</p>
+<div class="codehilite"><pre><span></span>/etc/init/gunicorn-demo.zmrenwu.com.conf
+
+start on net-device-up ①
+stop on shutdown
+
+respawn ②
+
+setuid yangxg ③
+chdir /home/yangxg/sites/demo.zmrenwu.com/django-blog-tutorial ④
+
+exec ../env/bin/gunicorn --bind unix:/tmp/demo.zmrenwu.com.socket blogproject.wsgi:application ⑤
+</pre></div>
+
+
+<p>① start on net-device-up 确保只在服务器联网时才启动 Gunicorn。</p>
+<p>② 如果进程崩溃了（比如服务器重启或者进程因为某些以外情况被 kill），respawn 将自动重启 Gunicorn。</p>
+<p>③ setuid 确保以 yangxg 用户的身份（换成你自己的用户名）运行 Gunicorn 进程。</p>
+<p>④ chdir 进入到指定目录，这里进入项目的根目录。</p>
+<p>⑤ exec 执行进程，即开启服务器进程。</p>
+<p>现在可以用 start 命令启动 Gunicorn 了：</p>
+<div class="codehilite"><pre><span></span>sudo start gunicorn-demo.zmrenwu.com
+</pre></div>
+
+
+<p>以后如果更新了代码，只要运行下面的命令重启一下 Nginx 和 Gunicorn 就可以使新的代码生效了：</p>
+<div class="codehilite"><pre><span></span>sudo service nginx reload
+sudo restart gunicorn-demo.zmrenwu.com
+</pre></div>
+
+
+<h2 id="shi-yong-cdn-jia-kuai-bootstrap-he-jquery-de-jia-zai-su-du">使用 CDN 加快 Bootstrap 和 Jquery 的加载速度</h2>
+<p>我们的项目使用了 bootstrap 和 jquery，这两个文件我们是从本地加载的。如果服务器性能比较差的话，加载需要耗费很长的时间，网站打开的速度就变得无法忍受。我们使用 CDN 来加快加载速度。具体来说，替换 base.html 的几个静态文件的加载标签：</p>
+<div class="codehilite"><pre><span></span>base.html
+
+- <span class="p">&lt;</span><span class="nt">link</span> <span class="na">rel</span><span class="o">=</span><span class="s">"stylesheet"</span> <span class="na">href</span><span class="o">=</span><span class="s">"{% static 'blog/css/bootstrap.min.css' %}"</span><span class="p">&gt;</span>
++ <span class="p">&lt;</span><span class="nt">link</span> <span class="na">href</span><span class="o">=</span><span class="s">"https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css"</span> <span class="na">rel</span><span class="o">=</span><span class="s">"stylesheet"</span><span class="p">&gt;</span>
+
+- <span class="p">&lt;</span><span class="nt">script</span> <span class="na">src</span><span class="o">=</span><span class="s">"{% static 'blog/js/jquery-2.1.3.min.js' %}"</span><span class="p">&gt;&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
++ <span class="p">&lt;</span><span class="nt">script</span> <span class="na">src</span><span class="o">=</span><span class="s">"https://cdn.bootcss.com/jquery/2.1.3/jquery.min.js"</span><span class="p">&gt;&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
+
+- <span class="p">&lt;</span><span class="nt">script</span> <span class="na">src</span><span class="o">=</span><span class="s">"{% static 'blog/js/bootstrap.min.js' %}"</span><span class="p">&gt;&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
++ <span class="p">&lt;</span><span class="nt">script</span> <span class="na">src</span><span class="o">=</span><span class="s">"https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js"</span><span class="p">&gt;&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
+</pre></div>
+
+
+<p>这样网站访问的速度将大大提升！</p>
+<h2 id="bu-shu-guo-cheng-zi-dong-hua">部署过程自动化</h2>
+<p>在整个部署过程中我们运行了十几条命令，手动输入了 N 个字符。如果每次更新代码都要远程连接到服务器执行这些命令的话将变得非常麻烦。</p>
+<p>下一篇教程将教大家使用 fabric 自动化整个部署过程。写好部署脚本后，只需要执行一条命令，就可以非常方便地自动完成整个部署。</p>
+
+                    <div class="flex-center top-gap"><span>-- EOF --</span></div>
+                </div>
+                <footer class="top-gap-big">
+                    <section class="share top-gap">
+                        <div class="jiathis_style">
+                            <span class="jiathis_txt">分享到：</span>
+                            <a class="jiathis_button_qzone" title="分享到QQ空间"><span class="jiathis_txt jiathis_separator jtico jtico_qzone">QQ空间</span></a>
+                            <a class="jiathis_button_tsina" title="分享到微博"><span class="jiathis_txt jiathis_separator jtico jtico_tsina">新浪微博</span></a>
+                            <a class="jiathis_button_tqq" title="分享到腾讯微博"><span class="jiathis_txt jiathis_separator jtico jtico_tqq">腾讯微博</span></a>
+                            <a class="jiathis_button_weixin" title="分享到微信"><span class="jiathis_txt jiathis_separator jtico jtico_weixin">微信</span></a>
+                            <a href="http://www.jiathis.com/share?uid=2128865" class="jiathis jiathis_txt jiathis_separator jtico jtico_jiathis" target="_blank">更多</a>
+                            <a class="jiathis_counter_style"><span class="jiathis_button_expanded jiathis_counter jiathis_bubble_style" id="jiathis_counter_13" title="累计分享0次">0</span></a>
+                        </div>
+                        <script type="text/javascript">
+                            var jiathis_config = {data_track_clickback: 'true'};
+                        </script>
+                        <script type="text/javascript" src="http://v3.jiathis.com/code/jia.js?uid=2128865" charset="utf-8"></script><script type="text/javascript" src="http://v3.jiathis.com/code/plugin.client.js" charset="utf-8"></script>
+                        <!-- JiaThis Button END -->
+                    </section>
+                    <br>
+                </footer>
+            </article>
+            <aside>
+
+                    <section class="tutorial-reminder text-small top-gap-big">
+                        本文属于 <span class="tutorial">django 博客教程</span>，<a href="/category/django-blog-tutorial/">查看该教程全部文章</a>
+                    </section>
+
+                <section class="pre-next top-gap text-small flex-left units-gap">
+                    <div class="unit-1-2">
+                        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+
+                            <a href="/post/19/">django 实现简单的搜索功能</a>
+                    </div>
+                    <div class="unit-1-2 flex-right">
+                            <span>
+
+                                    没有了
+                                <i class="fa fa-chevron-right" aria-hidden="true"></i>
+                            </span>
+                    </div>
+                </section>
+            </aside>
+        </section>
+        <hr>
+    </main>
+
+
+    <div class="musk"></div>
+    <aside class="unit-1-4 hide-on-mobile" id="sidebar">
+        <section class="">
+            <h3>文章目录</h3>
+            <div class="text-small table-of-content">
+                <div class="toc">
+<ul>
+<li><a href="#bu-shu-qian-zhun-bei">部署前准备</a><ul>
+<li><a href="#gou-mai-fu-wu-qi">购买服务器</a></li>
+<li><a href="#gou-mai-yu-ming">购买域名</a></li>
+</ul>
+</li>
+<li><a href="#da-jian-fu-wu-qi">搭建服务器</a><ul>
+<li><a href="#yuan-cheng-deng-lu-dao-fu-wu-qi">远程登录到服务器</a></li>
+<li><a href="#an-zhuang-ruan-jian">安装软件</a></li>
+<li><a href="#jie-xi-yu-ming-dao-fu-wu-qi-de-ip-di-zhi">解析域名到服务器的 IP 地址</a></li>
+<li><a href="#qi-dong-nginx-fu-wu">启动 Nginx 服务</a></li>
+</ul>
+</li>
+<li><a href="#bu-shu-dai-ma">部署代码</a><ul>
+<li><a href="#bu-shu-qian-de-xiang-mu-pei-zhi">部署前的项目配置</a></li>
+<li><a href="#jiang-dai-ma-shang-chuan-dao-github">将代码上传到 GitHub</a></li>
+<li><a href="#she-zhi-fu-wu-qi-mu-lu-jie-gou">设置服务器目录结构</a></li>
+<li><a href="#an-zhuang-xiang-mu-yi-lai">安装项目依赖</a></li>
+<li><a href="#shou-ji-jing-tai-wen-jian">收集静态文件</a></li>
+<li><a href="#sheng-cheng-shu-ju-ku">生成数据库</a></li>
+<li><a href="#chuang-jian-chao-ji-yong-hu">创建超级用户</a></li>
+</ul>
+</li>
+<li><a href="#pei-zhi-nginx">配置 Nginx</a></li>
+<li><a href="#shi-yong-gunicorn">使用 Gunicorn</a><ul>
+<li><a href="#zi-dong-qi-dong-gunicorn">自动启动 Gunicorn</a></li>
+</ul>
+</li>
+<li><a href="#shi-yong-cdn-jia-kuai-bootstrap-he-jquery-de-jia-zai-su-du">使用 CDN 加快 Bootstrap 和 Jquery 的加载速度</a></li>
+<li><a href="#bu-shu-guo-cheng-zi-dong-hua">部署过程自动化</a></li>
+</ul>
+</div>
+
+            </div>
+        </section>
+    </aside>
+
+        </div>
+    </div>
+</div>
+    <footer></footer>
+</body>
+</html>

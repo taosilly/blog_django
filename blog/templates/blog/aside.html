@@ -1,0 +1,92 @@
+{% load staticfiles %}
+{% load blog_tags %}
+
+<aside class="unit-1-4 unit-1-on-mobile">
+                    <section class="site-subtitle">
+                        <h3 class="hide-on-mobile">公告</h3>
+                        <h6 class="show-on-mobile">公告</h6>
+                        <div class="text-muted text-small favorite-tip">
+                            <p>这是我的博客</p>
+                            <p>我要找个工作</p>
+                        </div>
+                    </section>
+                     <section class="recent-posts">
+                        <h3>分类</h3>
+                         {% get_categories as categories %}
+                        <ul class="list-unstyle text-small">
+                            {% for category in categories %}
+                            <li>
+                                <a href="{% url 'blog:category' category.pk %}">{{ category.name }}</a>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                    </section>
+                    <section class="recent-posts">
+                        <h3>常用功能</h3>
+                        <ul class="list-unstyle text-small">
+                            <li><a href="/tags/">标签云</a>
+                                </li>
+                            <li><a href="/archives/">归档</a>
+                                </li>
+                            <li><a href="/about/">关于</a>
+                                </li>
+                        </ul>
+                    </section>
+                    <section>
+                        <h3>汇总</h3>
+
+                        <div class="site-state motion-element">
+                          <div class="site-state-item site-state-posts">
+                            <a href="/archives">
+                              <span class="site-state-item-count">{% get_post_total as post_total %} {{ post_total }}</span>
+                              <span class="site-state-item-name">日志</span>
+                            </a>
+                          </div>
+                            <div class="site-state-item site-state-categories">
+                              <a href="/categories">
+                                <span class="site-state-item-count">{% get_categories_total as categories_total %} {{ categories_total }}</span>
+                                <span class="site-state-item-name">分类</span>
+                              </a>
+                            </div>
+                            <div class="site-state-item site-state-tags">
+                              <a href="/tags">
+                                <span class="site-state-item-count">{% get_tags_total as tags_total %} {{ tags_total }}</span>
+                                <span class="site-state-item-name">标签</span>
+                              </a>
+                            </div>
+                        </div>
+                        <div class="links-of-author motion-element">
+
+
+                          <span class="links-of-author-item">
+                            <a href="https://github.com/taosilly" target="_blank" title="GitHub">
+
+                                <i class="fa fa-fw fa-github"></i>
+
+                              GitHub
+                            </a>
+                          </span>
+
+                                        <span class="links-of-author-item">
+                            <a href="http://weibo.com/taosilly" target="_blank" title="微博">
+
+                                <i class="fa fa-fw fa-weibo"></i>
+
+                              微博
+                            </a>
+                          </span>
+
+                                        <span class="links-of-author-item">
+                            <a href="http://www.jianshu.com/users/91d8524a8c6b" target="_blank" title="简书">
+
+                                <i class="fa fa-fw fa-edit"></i>
+
+                              简书
+                            </a>
+                          </span>
+
+
+                        </div>
+                    </section>
+
+                </aside>
