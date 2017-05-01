@@ -15,7 +15,7 @@
                     <span>{{ post.author }}</span>
                     <span>{{ post.created_time }}</span>
                     <span>字数 {{ post.body | length }}</span>
-                    <span>阅读 105</span>
+                    <span>阅读 {{ post.views }}</span>
 
                 </div>
                 <div class="post-body top-gap-big">
@@ -38,13 +38,20 @@
                 <section class="pre-next top-gap text-small flex-left units-gap">
                     <div class="unit-1-2">
                         <i class="fa fa-chevron-left" aria-hidden="true"></i>
+                        {% if previous_post == None %}
+                        没有了
+                        {% else %}
+                            <a href="{{ previous_post.get_absolute_url }}">{{ previous_post.title }}</a>
+                        {% endif %}
 
-                            <a href="/post/19/">django 实现简单的搜索功能</a>
                     </div>
                     <div class="unit-1-2 flex-right">
                             <span>
-
-                                    没有了
+                                {% if next_post == None %}
+                                没有了
+                                {% else %}
+                                    <a href="{{ next_post.get_absolute_url }}">{{ next_post.title }}</a>
+                                {% endif %}
                                 <i class="fa fa-chevron-right" aria-hidden="true"></i>
                             </span>
                     </div>

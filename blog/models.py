@@ -3,6 +3,7 @@ from django.contrib.auth.models import User
 from django.urls import reverse
 
 
+#todo: 需要写一些属性
 class Category(models.Model):
     """
     django 要求我们必须继承 models.Model 类，
@@ -44,6 +45,11 @@ class Post(models.Model):
     class Meta:
         ordering = ['-created_time']
 
+    STATUS_CHOICES = (
+        ('d', 'Draft'),
+        ('p', 'Published'),
+    )
+
     # 文章标题
     title = models.CharField(max_length=70)
 
@@ -83,7 +89,10 @@ class Post(models.Model):
     # 请看教程中的解释，
     # 亦可参考官方文档：
     # https://docs.djangoproject.com/en/1.10/topics/db/models/#relationships
-    category = models.ForeignKey(Category)
+    category = models.ForeignKey(Category,
+                                 verbose_name='分类',
+                                 null=True,
+                                 on_delete=models.SET_NULL)
     tags = models.ManyToManyField(Tag, blank=True)
 
     # 文章作者
@@ -97,6 +106,11 @@ class Post(models.Model):
     # 因此这是一对多的关系，
     # 和 Category 类似。
     author = models.ForeignKey(User)
+
+    views = models.PositiveIntegerField('浏览量', default=0)
+    status = models.CharField('文章状态', max_length=1, choices=STATUS_CHOICES, default=STATUS_CHOICES[0])
+    likes = models.PositiveIntegerField('点赞数', default=0)
+    topped = models.BooleanField('置顶', default=False)
 
     def __str__(self):
         return self.title

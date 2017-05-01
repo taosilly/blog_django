@@ -8,12 +8,11 @@ from markdown.extensions.toc import TocExtension
 
 def detail(request, pk):
     post = get_object_or_404(Post, pk=pk)
-    #post.body = markdown.markdown(post.body,
-    #                              extensions=[
-    #                                  'markdown.extensions.extra',
-    #                                  'markdown.extensions.codehilite',
-    #                                  'markdown.extensions.toc',
-    #                              ])
+    post.views = int(post.views + 1)
+    post.save()
+    next_post = Post.objects.filter(id__gt=pk).first()
+    previous_post = Post.objects.filter(id__lt=pk).order_by('-id').first()
+
     md = markdown.Markdown(extensions=['markdown.extensions.toc',
                                        'markdown.extensions.codehilite',
                                        TocExtension(slugify=slugify),
@@ -26,6 +25,8 @@ def detail(request, pk):
                'form': form,
                'comment_list': comment_list,
                'toc': md.toc,
+               'next_post': next_post,
+               'previous_post': previous_post,
                }
 
     return render(request, 'blog/detail.html', context=context)

@@ -15,7 +15,7 @@ def archives():
 
 @register.simple_tag
 def get_categories():
-    return Category.objects.all()
+    return Category.objects.annotate(num_posts=Count('post'))
 
 @register.simple_tag
 def get_post_total():
