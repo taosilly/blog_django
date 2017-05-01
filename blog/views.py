@@ -1,14 +1,25 @@
 from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponse
 from .models import Post,Category
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 #def index(request):
 #    return HttpResponse("欢迎访问我的博客首页！")
 
 def index(request):
     post_list = Post.objects.all()
-    return render(request,'blog/index.html',context={
-        'post_list':post_list
+    paginator = Paginator(post_list, 10)
+
+    page = request.GET.get('page')
+    try:
+        posts = paginator.page(page)
+    except PageNotAnInteger:
+        posts = paginator.page(1)
+    except EmptyPage:
+        posts = paginator.page(paginator.num_pages)
+
+    return render(request, 'blog/index.html', context={
+        'post_list': posts
     })
 
 

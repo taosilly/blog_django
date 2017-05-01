@@ -2,6 +2,8 @@ from django.shortcuts import render, get_object_or_404
 from .models import Post, Category
 from comments.forms import CommentForm
 import markdown
+from django.utils.text import slugify
+from markdown.extensions.toc import TocExtension
 
 
 def detail(request, pk):
@@ -14,9 +16,9 @@ def detail(request, pk):
     #                              ])
     md = markdown.Markdown(extensions=['markdown.extensions.toc',
                                        'markdown.extensions.codehilite',
-                                       'markdown.extensions.toc',
+                                       TocExtension(slugify=slugify),
                                        ])
-    html = md.convert(post.body)
+    post.body = md.convert(post.body)
 
     form = CommentForm()
     comment_list = post.comment_set.all()
@@ -24,7 +26,6 @@ def detail(request, pk):
                'form': form,
                'comment_list': comment_list,
                'toc': md.toc,
-               'html':html
                }
 
     return render(request, 'blog/detail.html', context=context)

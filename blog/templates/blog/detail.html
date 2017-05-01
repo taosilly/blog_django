@@ -19,7 +19,7 @@
 
                 </div>
                 <div class="post-body top-gap-big">
-                   {{ html | safe }}
+                   {{ post.body | safe }}
                     <div class="flex-center top-gap"><span>-- EOF --</span></div>
                     <div>
                         <span>分类：<a href="{{post.get_absolute_url}}" >{{ post.category }} </a></span><br/>

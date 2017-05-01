@@ -41,36 +41,18 @@
                         </article>
                         {% endfor %}
 
-                        <article>
-                            <div class="flex-left units-gap">
-                                <div class="unit-0">
-                                    <header class="text-small post-header-meta">
-                                        <span class="author">追梦人物</span>
-                                        <span class="pub-date text-muted"><time title="2017年4月27日 19:28">2&nbsp;日，17&nbsp;小时</time>前</span>
-                                    </header>
-                                    <div class="post-main-info">
-                                        <a class="title" href="/post/19/">django 实现简单的搜索功能</a>
-                                        <div class="text-small excerpt">
-                                            搜索是一个复杂的功能，但对于一些简单的搜索任务，我们可以使用 django model 层提供的一些内置方法来完成。本文将结合 django 模型管...
-                                        </div>
-                                    </div>
-                                    <footer class="text-small post-footer-meta">
-
-                                            <span class="category">
-                                        <a href="/category/djang-blog-recipes/">django 博客教程拓展</a>
-                                    </span>
-
-                                        <span class="views">
-                                        <a class="text-muted" href="/post/19/">
-                                            <i class="fa fa-eye" aria-hidden="true"></i> 62</a>
-                                    </span>
-
-                                    </footer>
-                                </div>
-
-                            </div>
-                        </article>
                     </section>
+                       <aside class="pagination flex-center">
+                            <ul class="pagination-bar list-unstyle-inline">
+                                {% for page in post_list.paginator.page_range %}
+                                    {% if page == post_list.paginator.number %}
+                                <li class="current"><a href="?page={{page}}">{{page}}</a></li>
+                                    {% else %}
+                                        <li><a href="?page={{page}}">{{page}}</a></li>
+                                    {% endif %}
+                                {% endfor %}
+                            </ul>
+                        </aside>
 
                 </main>
                 {% include  'blog/aside.html' %}
