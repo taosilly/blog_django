@@ -2,6 +2,7 @@ from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponse
 from .models import Post,Category
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+import  os
 
 #def index(request):
 #    return HttpResponse("欢迎访问我的博客首页！")
@@ -33,7 +34,9 @@ def archives(request, year, month):
     return render(request, 'blog/index.html', context={'post_list': post_list})
 
 
-def category(request, pk):
-    cate = get_object_or_404(Category, pk=pk)
+def category(request, category_pinyin):
+    #cate = get_object_or_404(Category, pk=pk)
+    cate = Category.objects.filter(pinyin = category_pinyin).first()
+    cate.images = os.path.join('/uploads/',str(cate.images))
     post_list = Post.objects.filter(category=cate)
-    return render(request, 'blog/index.html', context={'post_list': post_list})
+    return render(request, 'blog/category.html', context={'post_list': post_list, 'category': cate})

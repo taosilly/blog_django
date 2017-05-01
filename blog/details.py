@@ -10,8 +10,8 @@ def detail(request, pk):
     post = get_object_or_404(Post, pk=pk)
     post.views = int(post.views + 1)
     post.save()
-    next_post = Post.objects.filter(id__gt=pk).first()
-    previous_post = Post.objects.filter(id__lt=pk).order_by('-id').first()
+    next_post = Post.objects.filter(id__gt=post.pk).first()
+    previous_post = Post.objects.filter(id__lt=post.pk).order_by('-id').first()
 
     md = markdown.Markdown(extensions=['markdown.extensions.toc',
                                        'markdown.extensions.codehilite',

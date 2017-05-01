@@ -22,7 +22,7 @@
                    {{ post.body | safe }}
                     <div class="flex-center top-gap"><span>-- EOF --</span></div>
                     <div>
-                        <span>分类：<a href="{{post.get_absolute_url}}" >{{ post.category }} </a></span><br/>
+                        <span>分类：<a href="{% url 'blog:category' post.category.pinyin %}" >{{ post.category }} </a></span><br/>
                         标签： {{ post.get_tags }}
                     </div>
                 </div>

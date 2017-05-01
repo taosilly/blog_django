@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.urls import reverse
+from django.utils import timezone
 
 
 #todo: 需要写一些属性
@@ -21,6 +22,14 @@ class Category(models.Model):
     https://docs.djangoproject.com/en/1.10/ref/models/fields/#field-types
     """
     name = models.CharField(max_length=100)
+    pinyin = models.CharField(max_length=100,blank=True,unique=True)
+    status = models.CharField(max_length=50, blank=True )
+    describe = models.TextField( blank=True )
+    images = models.ImageField(blank=True)
+
+    created_time = models.DateTimeField(null=True)
+    modified_time = models.DateTimeField(null=True)
+
 
     def __str__(self):
         return self.name

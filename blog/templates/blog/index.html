@@ -26,7 +26,7 @@
                                     <div class="text-small post-footer-meta">
 
                                         <span class="category">
-                                            <a href="/category/django-blog-tutorial/">{{post.category}}</a>
+                                            <a href="{% url 'blog:category' post.category.pinyin %}">{{post.category}}</a>
                                         </span>
 
                                         <span class="views">

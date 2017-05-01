@@ -16,7 +16,7 @@
                         <ul class="list-unstyle text-small">
                             {% for category in categories %}
                             <li>
-                                <a href="{% url 'blog:category' category.pk %}">{{ category.name }}({{ category.num_posts }})</a>
+                                <a href="{% url 'blog:category' category.pinyin %}">{{ category.name }}({{ category.num_posts }})</a>
                             </li>
                             {% endfor %}
                         </ul>
